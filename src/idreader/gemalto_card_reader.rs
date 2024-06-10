@@ -83,7 +83,7 @@ impl CardReader for GemaltoCardReader  {
     fn read_raw_file(&self, card: &Card, file: &[u8], strip_tag: bool) -> Result<Vec<u8>, String> {
         let mut buffer: Vec<u8> = vec![];
 
-        self.select_file(&card, file, 4)?;
+        let _file = self.select_file(&card, file, 4)?;
     
         let len: u32 = 4;
         let mut offset = 0;

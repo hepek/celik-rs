@@ -21,10 +21,17 @@ struct Args {
     /// Dump to JSON to stdout
     #[clap(short = 'o', long, action)]
     to_json_stdout: bool,
+
+    #[clap(short = 'l', long, action)]
+    list_readers: bool,
+
+    #[clap(short = 'r', long, default_value_t = 0)]
+    reader: usize,
 }
 
 fn main() {
     let args = Args::parse();
+    let off = args.reader;
 
     // Establish a PC/SC context.
     let ctx = match Context::establish(Scope::User) {
@@ -45,8 +52,15 @@ fn main() {
         }
     };
 
+    if args.list_readers {
+        for (idx, reader) in readers.enumerate() {
+            println!("{}: {}", idx, reader.to_str().unwrap_or("bad card name string"));
+        }
+        std::process::exit(0);
+    }
+
     // Use the first reader.
-    let reader = match readers.next() {
+    let reader = match readers.skip(off).next() {
         Some(reader) => reader,
         None => {
             println!("No readers are connected.");
